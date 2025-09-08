@@ -27,13 +27,6 @@ class Wallet extends Model
         WalletTypeEnum::MERCHANT->value,
     ];
 
-    protected function casts()
-    {
-        return [
-            'wallet_type' => WalletTypeEnum::class,
-        ];
-    }
-
     /**
      * Get the user that owns the wallet.
      * @return BelongsTo<User, $this>
@@ -44,12 +37,12 @@ class Wallet extends Model
     }
 
     /**
-     * Check if the wallet is of type USER.
+     * Check if the wallet is of type MERCHANT.
      * 
      * @return bool
      */
     public function isMerchant(): bool
     {
-        return $this->wallet_type === WalletTypeEnum::MERCHANT;
+        return $this->wallet_type === WalletTypeEnum::MERCHANT->value;
     }
 }
