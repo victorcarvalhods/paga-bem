@@ -13,7 +13,7 @@ class StoreTransferTest extends TestCase
     #[Test]
     public function it_should_store_transfer(): void
     {
-        $payer = Wallet::factory()->create(['balance' => 1000]);
+        $payer = Wallet::factory()->user()->create(['balance' => 1000]);
         $payee = Wallet::factory()->create(['balance' => 500]);
 
         $value = $this->faker->randomFloat(2, 10, 1000);
@@ -41,7 +41,7 @@ class StoreTransferTest extends TestCase
     #[Test]
     public function it_should_not_allow_transfer_when_payer_has_insufficient_balance(): void
     {
-        $payer = Wallet::factory()->create(['balance' => 100]);
+        $payer = Wallet::factory()->user()->create(['balance' => 100]);
         $payee = Wallet::factory()->create(['balance' => 500]);
 
         $value = 200;
