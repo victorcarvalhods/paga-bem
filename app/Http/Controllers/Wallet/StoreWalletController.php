@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Wallet;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class StoreWalletController extends Controller
 {
@@ -31,6 +32,6 @@ class StoreWalletController extends Controller
 
         $wallet = $this->action->handle($dto);
 
-        return response()->json($wallet->toArray(), 201);
+        return response()->json($wallet->toArray(), Response::HTTP_CREATED);
     }
 }
