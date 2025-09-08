@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'transaction_authorization' => [
+        'url' => env('TRANSACTION_AUTHORIZATION_SERVICE', 'https://util.devi.tools/api/v2/authorize'),
+    ],
+
 ];

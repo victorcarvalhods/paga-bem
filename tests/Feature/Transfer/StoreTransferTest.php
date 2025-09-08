@@ -3,13 +3,24 @@
 namespace Tests\Feature\Transfer;
 
 use App\Models\Wallet;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use App\Services\AuthorizationGatewayInterface;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class StoreTransferTest extends TestCase
 {
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        
+        $this->mock(AuthorizationGatewayInterface::class, function ($mock) {
+            $mock->shouldReceive('authorize')
+                 ->andReturn(true)
+                 ->byDefault();
+        });
+    }
+
     #[Test]
     public function it_should_store_transfer(): void
     {
@@ -86,6 +97,43 @@ class StoreTransferTest extends TestCase
         $this->assertEquals([
             'error' => 'Merchant accounts cannot initiate transfers.',
             'code' => 422,
+        ], $response->json());
+
+        $this->assertDatabaseMissing('transfers', [
+            'payer_id' => $payer->id,
+            'payee_id' => $payee->id,
+        ]);
+
+        $payer->refresh();
+        $payee->refresh();
+
+        $this->assertEquals(1000, $payer->balance);
+        $this->assertEquals(500, $payee->balance);
+    }
+
+    #[Test]
+    public function it_should_not_allow_transfer_when_authorization_service_fails(): void
+    {
+        $this->mock(AuthorizationGatewayInterface::class, function ($mock) {
+            $mock->shouldReceive('authorize')
+                 ->once()
+                 ->andReturn(false);
+        });
+
+        $payer = Wallet::factory()->user()->create(['balance' => 1000]);
+        $payee = Wallet::factory()->create(['balance' => 500]);
+
+        $value = 200;
+
+        $response = $this->postJson('api/transfer', [
+            'value' => $value,
+            'payer' => $payer->id,
+            'payee' => $payee->id,
+        ]);
+
+        $this->assertEquals([
+            'error' => 'Transfer not authorized by external service.',
+            'code' => 403,
         ], $response->json());
 
         $this->assertDatabaseMissing('transfers', [

@@ -7,17 +7,24 @@ namespace App\Actions\Transfer;
 use App\Actions\Wallet\CreditWalletAction;
 use App\Actions\Wallet\DebitWalletAction;
 use App\Actions\Wallet\EnsurePayerCanTransferAction;
-use App\Actions\Wallet\EnsureWalletHasFundsForOperationAction;
 use App\DataTransferObjects\Transfer\TransferDataDTO;
-use App\Exceptions\Transfer\PayerCannotBeMerchantException;
+use App\Exceptions\Transfer\TransferDeclinedByServiceException;
 use App\Exceptions\Wallet\InsufficientBalanceException;
 use App\Models\Transfer;
-use App\Models\Wallet;
+use App\Services\AuthorizationGatewayInterface;
 use Illuminate\Support\Facades\DB;
 
 class ProcessTransferAction
 {
-    public function __construct(private EnsurePayerCanTransferAction $ensurePayerCanTransferAction, private DebitWalletAction $debitWalletAction, private CreditWalletAction $creditWalletAction) {}
+    private AuthorizationGatewayInterface $authorizationService;
+
+    public function __construct(
+        private EnsurePayerCanTransferAction $ensurePayerCanTransferAction,
+        private DebitWalletAction $debitWalletAction,
+        private CreditWalletAction $creditWalletAction
+    ) {
+        $this->authorizationService = app(AuthorizationGatewayInterface::class);
+    }
 
     /**
      * Process a transfer between two wallets.
@@ -30,14 +37,19 @@ class ProcessTransferAction
     public function handle(TransferDataDTO $dto): Transfer
     {
         return DB::transaction(function () use ($dto) {
-            //TODO: add authorization service connection
-            $transfer = Transfer::create($dto->toArray());
+
+            //TODO: Rename This method and move to a action class
+            if (!$this->callAuthorizationService()) {
+                throw new TransferDeclinedByServiceException();
+            }
 
             $this->validatePayerWallet($dto);
             
-            $this->debitWalletAction->handle($transfer->payer_id, $transfer->value);
-            $this->creditWalletAction->handle($transfer->payee_id, $transfer->value);
+            $this->debitWalletAction->handle($dto->payer, $dto->value);
+            $this->creditWalletAction->handle($dto->payee, $dto->value);
 
+            $transfer = Transfer::create($dto->toArray());
+            
             return $transfer;
         });
     }
@@ -50,6 +62,16 @@ class ProcessTransferAction
      */
     private function validatePayerWallet(TransferDataDTO $dto): bool
     {
-       return $this->ensurePayerCanTransferAction->handle($dto->payer, $dto->value);
+        return $this->ensurePayerCanTransferAction->handle($dto->payer, $dto->value);
+    }
+
+    /**
+     * Call the external authorization service.
+     *
+     * @return bool
+     */
+    private function callAuthorizationService(): bool
+    {
+        return $this->authorizationService->authorize();
     }
 }
