@@ -30,7 +30,6 @@ class Wallet extends Model
     protected function casts()
     {
         return [
-            'balance' => 'decimal:2',
             'wallet_type' => WalletTypeEnum::class,
         ];
     }
