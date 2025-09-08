@@ -12,6 +12,12 @@ class HttpAuthorizationGatewayService implements AuthorizationGatewayInterface
     public function __construct() {
         $this->serviceUrl = config('services.transaction_authorization.url');
     }
+
+    /**
+     * Authorize a transaction by calling an external service.
+     *
+     * @return boolean
+     */
     public function authorize(): bool
     {
         try {
@@ -22,6 +28,11 @@ class HttpAuthorizationGatewayService implements AuthorizationGatewayInterface
         }
     }
 
+    /**
+     * Call the external authorization service.
+     *
+     * @return boolean
+     */
     private function callExternalService(): bool
     {
         $client = $this->getHttpClient();
@@ -36,6 +47,7 @@ class HttpAuthorizationGatewayService implements AuthorizationGatewayInterface
      */
     private function getHttpClient(): Client
     {
-        return new Client();
+        // Disable SSL verification for local development
+        return new Client(['verify' => false]);
     }
 }
