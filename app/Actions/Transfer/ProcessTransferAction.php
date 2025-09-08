@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Actions\Transfer;
 
+use App\Actions\Wallet\CreditWalletAction;
+use App\Actions\Wallet\DebitWalletAction;
 use App\Actions\Wallet\EnsurePayerCanTransferAction;
 use App\Actions\Wallet\EnsureWalletHasFundsForOperationAction;
 use App\DataTransferObjects\Transfer\TransferDataDTO;
@@ -15,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 
 class ProcessTransferAction
 {
-    public function __construct(private EnsurePayerCanTransferAction $ensurePayerCanTransferAction) {}
+    public function __construct(private EnsurePayerCanTransferAction $ensurePayerCanTransferAction, private DebitWalletAction $debitWalletAction, private CreditWalletAction $creditWalletAction) {}
 
     /**
      * Process a transfer between two wallets.
@@ -32,10 +34,9 @@ class ProcessTransferAction
             $transfer = Transfer::create($dto->toArray());
 
             $this->validatePayerWallet($dto);
-
-            //TODO: use an wallet action to handle balance deposit and withdraws
-            $transfer->payer->decrement('balance', $transfer->value);
-            $transfer->payee->increment('balance', $transfer->value);
+            
+            $this->debitWalletAction->handle($transfer->payer_id, $transfer->value);
+            $this->creditWalletAction->handle($transfer->payee_id, $transfer->value);
 
             return $transfer;
         });
