@@ -42,4 +42,14 @@ class Wallet extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Check if the wallet is of type USER.
+     * 
+     * @return bool
+     */
+    public function isMerchant(): bool
+    {
+        return $this->wallet_type === WalletTypeEnum::MERCHANT;
+    }
 }
