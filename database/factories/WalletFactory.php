@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Wallet\WalletTypeEnum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +21,7 @@ class WalletFactory extends Factory
         return [
             'user_id' => User::factory(),
             'balance' => $this->faker->randomFloat(2, 0, 10000),
-            'wallet_type' => $this->faker->randomElement(),
+            'wallet_type' => $this->faker->randomElement(WalletTypeEnum::cases()),
         ];
     }
 }
