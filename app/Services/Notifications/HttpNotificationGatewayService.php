@@ -45,7 +45,7 @@ class HttpNotificationGatewayService implements NotificationGatewayInterface
      *
      * @param string $recipient
      * @param string $message
-     * @return array
+     * @return array<string, string>
      */
     private function createNotificationPayload(string $recipient, string $message): array
     {
@@ -58,7 +58,7 @@ class HttpNotificationGatewayService implements NotificationGatewayInterface
     /**
      * Send the HTTP request to the notification service.
      *
-     * @param array $payload
+     * @param array<string, mixed> $payload
      * @return void
      * @throws \Exception
      */
