@@ -3,13 +3,15 @@
 namespace App\Services\Transfers;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class HttpAuthorizationGatewayService implements AuthorizationGatewayInterface
 {
     private string $serviceUrl;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->serviceUrl = config('services.transaction_authorization.url');
     }
 
@@ -23,7 +25,7 @@ class HttpAuthorizationGatewayService implements AuthorizationGatewayInterface
         try {
             return $this->callExternalService();
         } catch (\Exception $e) {
-            Log::error('Authorization service error: ' . $e->getMessage());
+            Log::error('Http Authorization service error: ' . $e->getMessage());
             return false;
         }
     }
@@ -35,19 +37,17 @@ class HttpAuthorizationGatewayService implements AuthorizationGatewayInterface
      */
     private function callExternalService(): bool
     {
-        $client = $this->getHttpClient();
-        $response = $client->get($this->serviceUrl);
-        return $response->getStatusCode() === 200;
-    }
+        $response = Http::withHeaders([
+            'Accept'        => 'application/json',
+            'Content-Type' => 'application/json',
+        ])
+        ->withOptions([
+                'verify' => false,
+        ])
+        ->get($this->serviceUrl);
 
-    /**
-     * Get the HTTP client instance.
-     *
-     * @return Client
-     */
-    private function getHttpClient(): Client
-    {
-        // Disable SSL verification for local development
-        return new Client(['verify' => false]);
+        return $response->successful() && 
+               $response->json('status') === 'success' && 
+               $response->json('data.authorization') === true;
     }
 }
