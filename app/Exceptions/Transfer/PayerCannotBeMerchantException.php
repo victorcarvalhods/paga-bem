@@ -7,8 +7,11 @@ use Exception;
 
 class PayerCannotBeMerchantException extends ApplicationException
 {
-    /** @var string */
-    protected $message = 'Merchant accounts cannot initiate transfers.';
-    /** @var int */
-    protected $code = 422;
+    public function __construct()
+    {
+        parent::__construct(
+            message: 'Merchant accounts cannot initiate transfers.',
+            statusCode: 403,
+        );
+    }
 }

@@ -6,8 +6,11 @@ use App\Exceptions\ApplicationException;
 
 class HttpNotificationServiceUnavailableException extends ApplicationException
 {
-    /** @var string */
-    protected $message = 'Notification service is currently unavailable.';
-    /** @var int */
-    protected $code = 504;
+    public function __construct()
+    {
+        parent::__construct(
+            message: 'Notification service is currently unavailable.',
+            statusCode: 504,
+        );
+    }
 }

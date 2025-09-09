@@ -6,8 +6,10 @@ use App\Exceptions\ApplicationException;
 
 class TransferDeclinedByServiceException extends ApplicationException
 {
-    /** @var string */
-    protected $message = 'Transfer not authorized by external service.';
-    /** @var int */
-    protected $code = 403;
+    public function __construct() {
+        parent::__construct(
+            message: 'Transfer not authorized by payment service.',
+            statusCode: 401,
+        );
+    }
 }

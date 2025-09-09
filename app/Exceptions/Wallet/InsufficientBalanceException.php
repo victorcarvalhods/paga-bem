@@ -7,8 +7,11 @@ use Exception;
 
 class InsufficientBalanceException extends ApplicationException
 {
-    /** @var string */
-    protected $message = 'Insufficient balance to complete this transfer.';
-    /** @var int */
-    protected $code = 422;
+    public function __construct()
+    {
+        parent::__construct(
+            message: 'Insufficient balance to complete this transfer.',
+            statusCode: 409,
+        );
+    }
 }

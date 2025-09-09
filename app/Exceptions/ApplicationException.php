@@ -3,21 +3,47 @@
 namespace App\Exceptions;
 
 use Exception;
-use RuntimeException;
 
-class ApplicationException extends RuntimeException
+class ApplicationException extends Exception
 {
+    protected $statusCode;
+    protected $errorCode;
+    protected $context;
 
-    /**
-     * Render the exception as an array.
-     *
-     * @return array<string, int|string>
-     */
-    public function render(): array
+    public function __construct(
+        string $message = "",
+        int $statusCode = 400,
+        ?string $errorCode = null,
+        array $context = [],
+        ?Exception $previous = null
+    ) {
+        parent::__construct($message, 0, $previous);
+        $this->statusCode = $statusCode;
+        $this->errorCode = $errorCode ?? 'APPLICATION_ERROR';
+        $this->context = $context;
+    }
+
+    public function getStatusCode(): int
     {
-        return [
-            'error' => $this->getMessage(),
-            'code' => $this->getCode(),
-        ];
+        return $this->statusCode;
+    }
+
+    public function getErrorCode(): string
+    {
+        return $this->errorCode;
+    }
+
+    public function getContext(): array
+    {
+        return $this->context;
+    }
+
+    public function render()
+    {
+        return response()->json([
+            'error' => true,
+            'message' => $this->getMessage(),
+            'code' => $this->getStatusCode(),
+        ], $this->getStatusCode());
     }
 }
