@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Wallet;
 
 use App\Actions\Wallet\StoreWalletAction;
-use App\DataTransferObjects\Wallet\StoreWalletDTO;
+use App\DataTransferObjects\Wallet\WalletDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Wallet\StoreWalletRequest;
 use App\Models\Wallet;
@@ -23,11 +23,7 @@ class StoreWalletController extends Controller
      */
     public function __invoke(StoreWalletRequest $request): JsonResponse
     {
-        $data = $request->validated();
-
-        $dto = StoreWalletDTO::fromArray($data);
-
-        $wallet = $this->action->handle($dto);
+        $wallet = $this->action->handle($request->toDTO());
 
         return response()->json($wallet->toArray(), Response::HTTP_CREATED);
     }

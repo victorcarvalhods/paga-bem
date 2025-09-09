@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 class ProcessTransferAction
 {
     public function __construct(
-        private readonly EnsurePayerCanTransferAction $ensurePayerCanTransferAction,
+        private readonly EnsurePayerCanTransferAction $payerCanTransferAction,
         private readonly DebitWalletAction $debitWalletAction,
         private readonly CreditWalletAction $creditWalletAction,
         private readonly AuthorizationGatewayInterface $authorizationService,
@@ -38,7 +38,7 @@ class ProcessTransferAction
     {
         return DB::transaction(function () use ($dto) {
 
-            $this->ensurePayerCanTransferAction->handle($dto->payer, $dto->value);
+            $this->payerCanTransferAction->handle($dto->payer, $dto->value);
 
             $this->debitWalletAction->handle($dto->payer, $dto->value);
             $this->creditWalletAction->handle($dto->payee, $dto->value);
@@ -51,7 +51,7 @@ class ProcessTransferAction
 
             //This event is dispatched after the transaction is committed
             //and is listened to by the SendTransferNotificationListener to send the notification
-            TransferCompleted::dispatch($transfer);
+            event(new TransferCompleted($transfer));
 
             return $transfer;
         });

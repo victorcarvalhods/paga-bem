@@ -7,10 +7,10 @@ namespace App\DataTransferObjects\Wallet;
 final class WalletDTO
 {
     public function __construct(
-        public int $id,
-        public int $user_id,
+        public ?int $id,
+        public int $userId,
         public float $balance,
-        public string $wallet_type,
+        public string $walletType,
     ) {}
 
     /**
@@ -22,10 +22,10 @@ final class WalletDTO
     public static function fromArray(array $data): self
     {
         return new self(
-            id: $data['id'],
-            user_id: $data['user_id'],
+            id: $data['id'] ?? null,
+            userId: $data['userId'],
             balance: floatval($data['balance']),
-            wallet_type: $data['wallet_type'],
+            walletType: $data['walletType'],
         );
     }
 
@@ -38,9 +38,9 @@ final class WalletDTO
     {
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
+            'userId' => $this->userId,
             'balance' => $this->balance,
-            'wallet_type' => $this->wallet_type,
+            'walletType' => $this->walletType,
         ];
     }
 }

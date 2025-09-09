@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Wallet;
 
+use App\DataTransferObjects\Wallet\WalletDTO;
 use App\Models\Wallet;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -27,5 +28,16 @@ class StoreWalletRequest extends FormRequest
             'balance' => 'required|numeric|min:0',
             'wallet_type' => 'required|string|in:' . implode(',', Wallet::WALLET_TYPES),
         ];
+    }
+
+    public function toDTO(): WalletDTO
+    {
+        $data = $this->validated();
+        return WalletDTO::fromArray([
+            'id' => null,
+            'userId' => $data['user_id'],
+            'balance' => floatval($data['balance']),
+            'walletType' => $data['wallet_type'],
+        ]);
     }
 }

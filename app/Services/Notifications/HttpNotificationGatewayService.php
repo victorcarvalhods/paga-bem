@@ -7,7 +7,6 @@ namespace App\Services\Notifications;
 use App\Exceptions\Services\HttpNotificationServiceUnavailableException;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
-use PhpParser\Node\Stmt\TryCatch;
 
 class HttpNotificationGatewayService implements NotificationGatewayInterface
 {
