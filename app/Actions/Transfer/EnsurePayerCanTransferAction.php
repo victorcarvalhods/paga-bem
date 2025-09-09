@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Wallet;
+namespace App\Actions\Transfer;
 
 use App\Exceptions\Transfer\PayerCannotBeMerchantException;
 use App\Exceptions\Wallet\InsufficientBalanceException;
@@ -22,13 +22,14 @@ class EnsurePayerCanTransferAction
      */
     public function handle(int $payerId, float $amount): bool
     {
+        //TODO: Find a better way to deal with retrieving the wallet
         $payer = Wallet::findOrFail($payerId);
 
         if ($payer->isMerchant()) {
             throw new PayerCannotBeMerchantException();
         }
 
-        if ($payer->balance < $amount) {
+        if (!$payer->hasSufficientBalance($amount)) {
             throw new InsufficientBalanceException();
         }
 

@@ -6,12 +6,11 @@ namespace App\Actions\Transfer;
 
 use App\Actions\Wallet\CreditWalletAction;
 use App\Actions\Wallet\DebitWalletAction;
-use App\Actions\Wallet\EnsurePayerCanTransferAction;
+use App\Actions\Transfer\EnsurePayerCanTransferAction;
 use App\DataTransferObjects\Transfer\TransferDataDTO;
 use App\Events\Transfer\TransferCompleted;
 use App\Exceptions\ApplicationException;
 use App\Exceptions\Transfer\TransferDeclinedByServiceException;
-use App\Exceptions\Wallet\InsufficientBalanceException;
 use App\Models\Transfer;
 use App\Services\AuthorizationGatewayInterface;
 use Illuminate\Support\Facades\DB;
@@ -23,8 +22,7 @@ class ProcessTransferAction
         private readonly DebitWalletAction $debitWalletAction,
         private readonly CreditWalletAction $creditWalletAction,
         private readonly AuthorizationGatewayInterface $authorizationService,
-    ) {
-    }
+    ) {}
 
     /**
      * Process a transfer between two wallets.
@@ -40,10 +38,6 @@ class ProcessTransferAction
 
             $this->ensurePayerCanTransferAction->handle($dto->payer, $dto->value);
 
-            if (!$this->authorizationService->authorize()) {
-                throw new TransferDeclinedByServiceException();
-            }
-            
             $this->debitWalletAction->handle($dto->payer, $dto->value);
             $this->creditWalletAction->handle($dto->payee, $dto->value);
 
@@ -53,6 +47,12 @@ class ProcessTransferAction
                 'value' => $dto->value,
             ]);
 
+            if (!$this->authorizationService->authorize()) {
+                throw new TransferDeclinedByServiceException();
+            }
+
+            //This event is dispatched after the transaction is committed
+            //and is listened to by the SendTransferNotificationListener to send the notification
             TransferCompleted::dispatch($transfer);
 
             return $transfer;
