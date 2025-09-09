@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Wallet;
 use App\Actions\Wallet\StoreWalletAction;
 use App\DataTransferObjects\Wallet\StoreWalletDTO;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Wallet\StoreWalletRequest;
 use App\Models\Wallet;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,13 +21,9 @@ class StoreWalletController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(StoreWalletRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'balance' => 'required|numeric|min:0',
-            'wallet_type' => 'required|string|in:' . implode(',', Wallet::WALLET_TYPES),
-        ]);
+        $data = $request->validated();
 
         $dto = StoreWalletDTO::fromArray($data);
 

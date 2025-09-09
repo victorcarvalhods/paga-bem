@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Transfer;
 use App\Actions\Transfer\ProcessTransferAction;
 use App\DataTransferObjects\Transfer\TransferDataDTO;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Transfer\StoreTransferRequest;
 use App\Models\Transfer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,10 +17,9 @@ class StoreTransferController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(StoreTransferRequest $request): JsonResponse
     {
-        //TODO: Add validation rules
-        $validated = $request->all();
+        $validated = $request->validated();
         $validated['payer_id'] = $validated['payer'];
         $validated['payee_id'] = $validated['payee'];
 
