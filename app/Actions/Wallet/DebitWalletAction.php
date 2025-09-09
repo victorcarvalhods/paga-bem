@@ -6,9 +6,12 @@ namespace App\Actions\Wallet;
 
 use App\Exceptions\Wallet\InsufficientBalanceException;
 use App\Models\Wallet;
+use App\Repositories\Wallet\WalletRepository;
 
 class DebitWalletAction
 {
+    public function __construct(private readonly WalletRepository $walletRepository) {}
+
     /**
      * Debit a specified amount from the wallet.
      *
@@ -20,13 +23,15 @@ class DebitWalletAction
      */
     public function handle(int $walletId, float $amount): Wallet
     {
-        $wallet = Wallet::query()->findOrFail($walletId);
+        $wallet = $this->walletRepository->findById($walletId);
 
-        if ($wallet->balance < $amount) {
-            throw new InsufficientBalanceException('Insufficient balance to complete this operation.');
+        if (!$wallet->hasSufficientBalance($amount)) {
+            throw new InsufficientBalanceException();
         }
 
         $wallet->decrement('balance', $amount);
+
+        $wallet->save();
 
         return $wallet;
     }

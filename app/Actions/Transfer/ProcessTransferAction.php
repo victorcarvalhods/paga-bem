@@ -12,6 +12,7 @@ use App\Events\Transfer\TransferCompleted;
 use App\Exceptions\ApplicationException;
 use App\Exceptions\Transfer\TransferDeclinedByServiceException;
 use App\Models\Transfer;
+use App\Repositories\Transfer\TransferRepository;
 use App\Services\AuthorizationGatewayInterface;
 use Illuminate\Support\Facades\DB;
 
@@ -22,6 +23,7 @@ class ProcessTransferAction
         private readonly DebitWalletAction $debitWalletAction,
         private readonly CreditWalletAction $creditWalletAction,
         private readonly AuthorizationGatewayInterface $authorizationService,
+        private readonly TransferRepository $transferRepository,
     ) {}
 
     /**
@@ -41,11 +43,7 @@ class ProcessTransferAction
             $this->debitWalletAction->handle($dto->payer, $dto->value);
             $this->creditWalletAction->handle($dto->payee, $dto->value);
 
-            $transfer = Transfer::create([
-                'payer_id' => $dto->payer,
-                'payee_id' => $dto->payee,
-                'value' => $dto->value,
-            ]);
+            $transfer = $this->transferRepository->create($dto);
 
             if (!$this->authorizationService->authorize()) {
                 throw new TransferDeclinedByServiceException();

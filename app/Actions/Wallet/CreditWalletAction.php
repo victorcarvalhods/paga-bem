@@ -6,9 +6,12 @@ namespace App\Actions\Wallet;
 
 use App\Exceptions\Wallet\InsufficientBalanceException;
 use App\Models\Wallet;
+use App\Repositories\Wallet\WalletRepository;
 
 class CreditWalletAction
 {
+    public function __construct(private readonly WalletRepository $walletRepository) {}
+
     /**
      * Credit a specified amount to the wallet.
      *
@@ -18,9 +21,11 @@ class CreditWalletAction
      */
     public function handle(int $walletId, float $amount): Wallet
     {
-        $wallet = Wallet::query()->findOrFail($walletId);
+        $wallet = $this->walletRepository->findById($walletId);
 
         $wallet->increment('balance', $amount);
+
+        $wallet->save();
 
         return $wallet;
     }

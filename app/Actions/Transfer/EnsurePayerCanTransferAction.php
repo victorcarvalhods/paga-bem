@@ -7,9 +7,12 @@ namespace App\Actions\Transfer;
 use App\Exceptions\Transfer\PayerCannotBeMerchantException;
 use App\Exceptions\Wallet\InsufficientBalanceException;
 use App\Models\Wallet;
+use App\Repositories\Wallet\WalletRepository;
 
 class EnsurePayerCanTransferAction
 {
+
+    public function __construct(private readonly WalletRepository $walletRepository) {}
 
     /**
      * Ensure that the payer can make a transfer.
@@ -22,8 +25,7 @@ class EnsurePayerCanTransferAction
      */
     public function handle(int $payerId, float $amount): bool
     {
-        //TODO: Find a better way to deal with retrieving the wallet
-        $payer = Wallet::findOrFail($payerId);
+        $payer = $this->walletRepository->findById($payerId);
 
         if ($payer->isMerchant()) {
             throw new PayerCannotBeMerchantException();
