@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Transfers;
 
 use Illuminate\Container\Attributes\Bind;
 

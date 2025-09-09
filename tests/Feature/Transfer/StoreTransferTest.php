@@ -5,7 +5,7 @@ namespace Tests\Feature\Transfer;
 use App\Events\Transfer\TransferCompleted;
 use App\Listeners\Transfer\SendTransferSuccessNotification;
 use App\Models\Wallet;
-use App\Services\AuthorizationGatewayInterface;
+use App\Services\Transfers\AuthorizationGatewayInterface;
 use App\Services\Notifications\NotificationGatewayInterface;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;

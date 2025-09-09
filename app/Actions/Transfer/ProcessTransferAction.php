@@ -13,7 +13,7 @@ use App\Exceptions\ApplicationException;
 use App\Exceptions\Transfer\TransferDeclinedByServiceException;
 use App\Models\Transfer;
 use App\Repositories\Transfer\TransferRepository;
-use App\Services\AuthorizationGatewayInterface;
+use App\Services\Transfers\AuthorizationGatewayInterface;
 use Illuminate\Support\Facades\DB;
 
 class ProcessTransferAction
