@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Wallet\WalletTypeEnum;
+use App\Enums\Wallet\WalletTypeEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,7 +26,7 @@ class Wallet extends Model
      * @var string[]
      */
     public const WALLET_TYPES = [
-        WalletTypeEnum::USER->value,
+        WalletTypeEnum::COSTUMER->value,
         WalletTypeEnum::MERCHANT->value,
     ];
 

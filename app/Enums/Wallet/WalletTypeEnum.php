@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Wallet;
+namespace App\Enums\Wallet;
 
 enum WalletTypeEnum: string
 {
-    case USER = 'user';
+    case COSTUMER = 'costumer';
     case MERCHANT = 'merchant';
 }

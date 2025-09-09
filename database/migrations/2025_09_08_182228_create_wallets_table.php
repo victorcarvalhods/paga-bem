@@ -17,6 +17,8 @@ return new class extends Migration
             $table->decimal('balance', 15, 2)->default(0);
             $table->string('wallet_type');
             $table->timestamps();
+
+            $table->unique(['user_id', 'wallet_type'], 'unique_user_wallet_type'); // Ensure a user can have only one wallet of each type
         });
     }
 

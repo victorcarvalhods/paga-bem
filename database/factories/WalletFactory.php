@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
-use App\Wallet\WalletTypeEnum;
+use App\Enums\Wallet\WalletTypeEnum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -48,7 +48,7 @@ class WalletFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'wallet_type' => WalletTypeEnum::USER,
+                'wallet_type' => WalletTypeEnum::COSTUMER,
             ];
         });
     }

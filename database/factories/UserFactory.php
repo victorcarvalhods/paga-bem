@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\User\UserDocumentTypeEnum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -23,19 +24,18 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        $isCpf = fake()->boolean();
+        $isCpf = $this->faker->randomElement(UserDocumentTypeEnum::cases()) === UserDocumentTypeEnum::CPF;
 
-        $cpfCnpj = $isCpf
+        $documentNumber = $isCpf
             ? fake()->unique()->numerify('###########') // 11 digits for CPF
             : fake()->unique()->numerify('##############'); // 14 digits for CNPJ
             
         return [
-            'full_name' => fake()->name(),
-            'cpf_cnpj' => $cpfCnpj,
+            'name' => fake()->name(),
+            'document_type' => $isCpf ? UserDocumentTypeEnum::CPF->value : UserDocumentTypeEnum::CNPJ->value,
+            'document_number' => $documentNumber,
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
         ];
     }
 
