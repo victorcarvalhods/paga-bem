@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\DataTransferObjects\Transfer;
 
-final class TransferDataDTO
+final class TransferDTO
 {
 
     public function __construct(
-        public ?int $id = null,
         public int $payer,
         public int $payee,
         public float $value,
+        public ?int $id = null,
     ) {}
 
     /**

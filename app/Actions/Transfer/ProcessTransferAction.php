@@ -7,7 +7,7 @@ namespace App\Actions\Transfer;
 use App\Actions\Wallet\CreditWalletAction;
 use App\Actions\Wallet\DebitWalletAction;
 use App\Actions\Transfer\EnsurePayerCanTransferAction;
-use App\DataTransferObjects\Transfer\TransferDataDTO;
+use App\DataTransferObjects\Transfer\TransferDTO;
 use App\Events\Transfer\TransferCompleted;
 use App\Exceptions\ApplicationException;
 use App\Exceptions\Transfer\TransferDeclinedByServiceException;
@@ -29,12 +29,12 @@ class ProcessTransferAction
     /**
      * Process a transfer between two wallets.
      * 
-     * @param TransferDataDTO $dto
+     * @param TransferDTO $dto
      * @return Transfer
      * 
      * @throws ApplicationException
      */
-    public function handle(TransferDataDTO $dto): Transfer
+    public function handle(TransferDTO $dto): Transfer
     {
         return DB::transaction(function () use ($dto) {
 
