@@ -2,8 +2,13 @@
 
 namespace Tests\Feature\Transfer;
 
+use App\Events\Transfer\TransferCompleted;
+use App\Listeners\Transfer\SendTransferSuccessNotification;
 use App\Models\Wallet;
 use App\Services\AuthorizationGatewayInterface;
+use App\Services\Notifications\NotificationGatewayInterface;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -17,6 +22,12 @@ class StoreTransferTest extends TestCase
         $this->mock(AuthorizationGatewayInterface::class, function ($mock) {
             $mock->shouldReceive('authorize')
                  ->andReturn(true)
+                 ->byDefault();
+        });
+
+        $this->mock(NotificationGatewayInterface::class, function ($mock) {
+            $mock->shouldReceive('sendNotification')
+                 ->andReturnNull()
                  ->byDefault();
         });
     }
@@ -146,6 +157,43 @@ class StoreTransferTest extends TestCase
 
         $this->assertEquals(1000, $payer->balance);
         $this->assertEquals(500, $payee->balance);
+    }
+
+    #[Test]
+    public function it_should_send_notification_on_successful_transfer(): void
+    {
+        Event::fake();
+
+        $payer = Wallet::factory()->user()->create(['balance' => 1000]);
+        $payee = Wallet::factory()->create(['balance' => 500]);
+
+        $value = 150;
+
+        $response = $this->postJson('api/transfer', [
+            'value' => $value,
+            'payer' => $payer->id,
+            'payee' => $payee->id,
+        ]);
+
+        $response->assertStatus(201);
+
+        $this->assertDatabaseHas('transfers', [
+            'payer_id' => $payer->id,
+            'payee_id' => $payee->id,
+        ]);
+
+        $payer->refresh();
+        $payee->refresh();
+
+        Event::assertDispatched(TransferCompleted::class);
+        
+        Event::assertListening(
+            TransferCompleted::class,
+            SendTransferSuccessNotification::class
+        );
+
+        $this->assertEquals(1000 - $value, $payer->balance);
+        $this->assertEquals(500 + $value, $payee->balance);
     }
 
 }

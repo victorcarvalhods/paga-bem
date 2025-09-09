@@ -8,6 +8,7 @@ final class TransferDataDTO
 {
 
     public function __construct(
+        public ?int $id = null,
         public int $payer,
         public int $payee,
         public float $value,
@@ -22,6 +23,7 @@ final class TransferDataDTO
     public static function fromArray(array $data): self
     {
         return new self(
+            id: $data['id'] ?? null,
             payer: $data['payer_id'],
             payee: $data['payee_id'],
             value: $data['value'],
@@ -36,6 +38,7 @@ final class TransferDataDTO
     public function toArray(): array
     {
         return [
+            'id' => $this->id,
             'payer_id' => $this->payer,
             'payee_id' => $this->payee,
             'value' => $this->value,

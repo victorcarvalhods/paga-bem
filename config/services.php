@@ -39,4 +39,8 @@ return [
         'url' => env('TRANSACTION_AUTHORIZATION_SERVICE', 'https://util.devi.tools/api/v2/authorize'),
     ],
 
+    'notification_service' => [
+        'url' => env('NOTIFICATION_SERVICE_ENDPOINT', 'https://util.devi.tools/api/v1/notify'),
+    ],
+
 ];

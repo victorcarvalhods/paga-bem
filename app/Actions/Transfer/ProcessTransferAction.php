@@ -8,6 +8,7 @@ use App\Actions\Wallet\CreditWalletAction;
 use App\Actions\Wallet\DebitWalletAction;
 use App\Actions\Wallet\EnsurePayerCanTransferAction;
 use App\DataTransferObjects\Transfer\TransferDataDTO;
+use App\Events\Transfer\TransferCompleted;
 use App\Exceptions\ApplicationException;
 use App\Exceptions\Transfer\TransferDeclinedByServiceException;
 use App\Exceptions\Wallet\InsufficientBalanceException;
@@ -51,7 +52,9 @@ class ProcessTransferAction
                 'payee_id' => $dto->payee,
                 'value' => $dto->value,
             ]);
-            
+
+            TransferCompleted::dispatch($transfer);
+
             return $transfer;
         });
     }
