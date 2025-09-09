@@ -23,15 +23,7 @@ class DebitWalletAction
      */
     public function handle(int $walletId, float $amount): Wallet
     {
-        $wallet = $this->walletRepository->findById($walletId);
-
-        if (!$wallet->hasSufficientBalance($amount)) {
-            throw new InsufficientBalanceException();
-        }
-
-        $wallet->decrement('balance', $amount);
-
-        $wallet->save();
+        $wallet = $this->walletRepository->withdraw($walletId, $amount);
 
         return $wallet;
     }

@@ -20,4 +20,26 @@ class WalletRepository
 
         return $wallet;
     }
+
+    public function withdraw(int $walletId, float $amount): Wallet
+    {
+        $wallet = $this->findById($walletId);
+
+        $wallet->decrement('balance', $amount);
+
+        $wallet->save();
+
+        return $wallet;
+    }
+
+    public function deposit(int $walletId, float $amount): Wallet
+    {
+        $wallet = $this->findById($walletId);
+
+        $wallet->increment('balance', $amount);
+
+        $wallet->save();
+
+        return $wallet;
+    }
 }

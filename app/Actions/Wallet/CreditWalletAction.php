@@ -21,11 +21,7 @@ class CreditWalletAction
      */
     public function handle(int $walletId, float $amount): Wallet
     {
-        $wallet = $this->walletRepository->findById($walletId);
-
-        $wallet->increment('balance', $amount);
-
-        $wallet->save();
+        $wallet = $this->walletRepository->deposit($walletId, $amount);
 
         return $wallet;
     }
