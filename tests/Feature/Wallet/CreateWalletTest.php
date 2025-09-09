@@ -13,7 +13,7 @@ class CreateWalletTest extends TestCase
     {
         $wallet = Wallet::factory()->raw();
 
-        $response = $this->postJson('/api/wallets', $wallet);
+        $response = $this->postJson(route('wallets.store'), $wallet);
 
         $response->assertStatus(201)
             ->assertJsonStructure([
@@ -39,7 +39,7 @@ class CreateWalletTest extends TestCase
     #[Test]
     public function it_validates_required_fields()
     {
-        $response = $this->postJson('/api/wallets', []);
+        $response = $this->postJson(route('wallets.store'), []);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['user_id', 'balance', 'wallet_type']);
@@ -50,7 +50,7 @@ class CreateWalletTest extends TestCase
     {
         $wallet = Wallet::factory()->raw(['wallet_type' => 'invalid_type']);
 
-        $response = $this->postJson('/api/wallets', $wallet);
+        $response = $this->postJson(route('wallets.store'), $wallet);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['wallet_type']);
@@ -61,7 +61,7 @@ class CreateWalletTest extends TestCase
     {
         $wallet = Wallet::factory()->raw(['balance' => -100]);
 
-        $response = $this->postJson('/api/wallets', $wallet);
+        $response = $this->postJson(route('wallets.store'), $wallet);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['balance']);
@@ -72,7 +72,7 @@ class CreateWalletTest extends TestCase
     {
         $wallet = Wallet::factory()->raw(['user_id' => 999999]);
 
-        $response = $this->postJson('/api/wallets', $wallet);
+        $response = $this->postJson(route('wallets.store'), $wallet);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['user_id']);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Events\Transfer;
+namespace Tests\Unit\Events;
 
 use App\Events\Transfer\TransferCompleted;
 use App\Models\Transfer;

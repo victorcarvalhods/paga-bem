@@ -9,6 +9,6 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/wallets', StoreWalletController::class);
+Route::post('/wallets', StoreWalletController::class)->name('wallets.store');
 
-Route::post('/transfer', StoreTransferController::class);
+Route::post('/transfer', StoreTransferController::class)->name('transfer.store');

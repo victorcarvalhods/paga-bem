@@ -40,7 +40,7 @@ class StoreTransferTest extends TestCase
 
         $value = $this->faker->randomFloat(2, 10, 1000);
 
-        $response = $this->postJson('api/transfer', [
+        $response = $this->postJson(route('transfer.store'), [
             'value' => $value,
             'payer' => $payer->id,
             'payee' => $payee->id,
@@ -62,7 +62,7 @@ class StoreTransferTest extends TestCase
 
         $value = 200;
 
-        $response = $this->postJson('api/transfer', [
+        $response = $this->postJson(route('transfer.store'), [
             'value' => $value,
             'payer' => $payer->id,
             'payee' => $payee->id,
@@ -91,7 +91,7 @@ class StoreTransferTest extends TestCase
 
         $value = 200;
 
-        $response = $this->postJson('api/transfer', [
+        $response = $this->postJson(route('transfer.store'), [
             'value' => $value,
             'payer' => $payer->id,
             'payee' => $payee->id,
@@ -126,7 +126,7 @@ class StoreTransferTest extends TestCase
 
         $value = 200;
 
-        $response = $this->postJson('api/transfer', [
+        $response = $this->postJson(route('transfer.store'), [
             'value' => $value,
             'payer' => $payer->id,
             'payee' => $payee->id,
@@ -157,7 +157,7 @@ class StoreTransferTest extends TestCase
 
         $value = 150;
 
-        $response = $this->postJson('api/transfer', [
+        $response = $this->postJson(route('transfer.store'), [
             'value' => $value,
             'payer' => $payer->id,
             'payee' => $payee->id,

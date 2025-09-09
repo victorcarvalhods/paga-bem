@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Listeners\Transfer;
+namespace Tests\Unit\Listeners;
 
 use App\Events\Transfer\TransferCompleted;
 use App\Listeners\Transfer\SendTransferSuccessNotification;
