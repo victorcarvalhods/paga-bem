@@ -19,10 +19,10 @@ class HttpNotificationGatewayService implements NotificationGatewayInterface
 
     /**
      * Send a notification to a recipient.
-     * @param string $recipient The recipient's identifier (e.g., email, phone number).
+     * @param string|null $recipient The recipient's identifier (e.g., email, phone number).
      * @param string $message The message content to be sent.
      */
-    public function sendNotification(string $recipient, string $message): void
+    public function sendNotification(?string $recipient, string $message): void
     {
         $notificationPayload = $this->createNotificationPayload($recipient, $message);
 
@@ -42,11 +42,11 @@ class HttpNotificationGatewayService implements NotificationGatewayInterface
     /**
      * Create the payload for the notification service.
      *
-     * @param string $recipient
+     * @param string|null $recipient
      * @param string $message
-     * @return array<string, string>
+     * @return array<string, string|null>
      */
-    private function createNotificationPayload(string $recipient, string $message): array
+    private function createNotificationPayload(?string $recipient, string $message): array
     {
         return [
             'recipient' => $recipient,
@@ -72,12 +72,12 @@ class HttpNotificationGatewayService implements NotificationGatewayInterface
     /**
      * Log error details.
      *
-     * @param string $recipient
+     * @param string|null $recipient
      * @param string $message
      * @param \Exception $e
      * @return void
      */
-    private function logError(string $recipient, string $message, \Exception $e): void
+    private function logError(?string $recipient, string $message, \Exception $e): void
     {
         Log::error('Failed to send notification', [
             'recipient' => $recipient,

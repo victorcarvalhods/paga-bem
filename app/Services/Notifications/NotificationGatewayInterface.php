@@ -9,8 +9,8 @@ interface NotificationGatewayInterface
 {
     /**
      * Send a notification to a recipient.
-     * @param string $recipient The recipient's identifier (e.g., email, phone number).
+     * @param string|null $recipient The recipient's identifier (e.g., email, phone number).
      * @param string $message The message content to be sent.
      */
-    public function sendNotification(string $recipient, string $message): void;
+    public function sendNotification(?string $recipient, string $message): void;
 }

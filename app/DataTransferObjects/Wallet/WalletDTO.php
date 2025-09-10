@@ -16,23 +16,23 @@ final class WalletDTO
     /**
      * Create a DTO from an array.
      *
-     * @param array<string, int|string|float> $data
+     * @param array<string, string|float|int|null> $data
      * @return self
      */
     public static function fromArray(array $data): self
     {
         return new self(
-            id: $data['id'] ?? null,
-            userId: $data['userId'],
+            id: isset($data['id']) ? (int) $data['id'] : null,
+            userId: (int) $data['userId'],
             balance: floatval($data['balance']),
-            walletType: $data['walletType'],
+            walletType: (string) $data['walletType'],
         );
     }
 
     /**
      * Convert the DTO to an array.
      *
-     * @return array<string, int|string|float>
+     * @return array<string, string|float|int|null>
      */
     public function toArray(): array
     {

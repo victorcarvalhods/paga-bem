@@ -23,17 +23,17 @@ final class TransactionDTO
     public static function fromArray(array $data): self
     {
         return new self(
-            id: $data['id'] ?? null,
-            payer: $data['payer_id'],
-            payee: $data['payee_id'],
-            value: $data['value'],
+            id: isset($data['id']) ? (int) $data['id'] : null,
+            payer: (int) $data['payer_id'],
+            payee: (int) $data['payee_id'],
+            value: (float) $data['value'],
         );
     }
 
     /**
      * Convert the DTO to an array.
      *
-     * @return array<string, int|string|float>
+     * @return array<string, float|int|null>
      */
     public function toArray(): array
     {

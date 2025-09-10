@@ -42,7 +42,7 @@ class SendTransactionSuccessNotification implements ShouldQueueAfterCommit
 
         $message = "Transaction of {$transaction->value} from wallet {$transaction->payer_id} to wallet {$transaction->payee_id} was successful.";
 
-        $recipient = $transaction->payee->user->email;
+        $recipient = $transaction->payee?->user?->email;
 
         $this->notificationService->sendNotification($recipient, $message);
     }
