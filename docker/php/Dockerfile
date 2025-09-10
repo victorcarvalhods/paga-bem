@@ -1,5 +1,8 @@
 FROM php:8.4-fpm
 
+ARG user=pagabem
+ARG uid=1000
+
 # Working dir
 WORKDIR /var/www
 
@@ -25,18 +28,13 @@ RUN pecl install redis && docker-php-ext-enable redis
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 COPY . /var/www
-# # Entrypoint script to wait for DB and run migrations and seeders
 
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-ARG UID=1000
-ARG GID=1000
+RUN useradd -G www-data,root -u $uid -d /home/$user $user
 
-RUN groupadd -g ${GID} --non-unique appgroup && \
-    useradd -u ${UID} -ms /bin/bash -g appgroup appuser
+RUN mkdir -p /home/$user/.composer && \
+    chown -R $user:$user /home/$user/.composer
 
-RUN chown -R appuser:appgroup /var/www/storage /var/www/bootstrap/cache
-
-USER appuser
+USER $user
 EXPOSE 9000
 CMD ["php-fpm", "-F"]

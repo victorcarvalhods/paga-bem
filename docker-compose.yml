@@ -75,13 +75,15 @@ services:
         working_dir: /var/www
         volumes:
             - './:/var/www'
-        command: 'php artisan horizon'
+        command: 'php artisan queue:work --tries=3'
         networks:
             - pagabem-network
         depends_on:
             - app
             - redis
             - mysql
+        deploy:
+            replicas: 1
             
 networks:
     pagabem-network:
