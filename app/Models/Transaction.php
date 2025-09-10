@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Enums\Transaction\TransactionStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property TransactionStatusEnum $status
+ */
 class Transaction extends Model
 {
     /** @use HasFactory<\Database\Factories\TransactionFactory> */
@@ -15,7 +19,15 @@ class Transaction extends Model
         'value',
         'payer_id',
         'payee_id',
+        'status',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'status' => TransactionStatusEnum::class,
+        ];
+    }
 
     /**
      * Get the payer wallet.

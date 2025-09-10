@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\Transaction\TransactionStatusEnum;
 use App\Models\Wallet;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,6 +22,7 @@ class TransactionFactory extends Factory
             'value' => $this->faker->randomFloat(2, 10, 1000),
             'payer_id' => Wallet::factory(),
             'payee_id' => Wallet::factory(),
+            'status' => TransactionStatusEnum::PENDING->value,
         ];
     }
 }

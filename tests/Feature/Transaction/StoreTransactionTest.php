@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Transaction;
 
+use App\Enums\Transaction\TransactionStatusEnum;
 use App\Events\Transaction\TransactionCompleted;
 use App\Listeners\Transaction\SendTransactionSuccessNotification;
 use App\Models\Wallet;
@@ -51,7 +52,12 @@ class StoreTransactionTest extends TestCase
         $this->assertDatabaseHas('transactions', [
             'payer_id' => $payer->id,
             'payee_id' => $payee->id,
+            'value' => $value,
+            'status' => TransactionStatusEnum::COMPLETED->value,
         ]);
+
+        $this->assertPayerBalance($payer, 1000 - $value);
+        $this->assertPayeeBalance($payee, 500 + $value);
     }
 
     #[Test]
@@ -74,13 +80,15 @@ class StoreTransactionTest extends TestCase
             'message' => 'Insufficient balance to complete this transaction.',
         ], $response->json());
 
-        $this->assertDatabaseMissing('transactions', [
+        $this->assertDatabaseHas('transactions', [
             'payer_id' => $payer->id,
             'payee_id' => $payee->id,
+            'value' => $value,
+            'status' => TransactionStatusEnum::FAILED_NO_FUNDS->value,
         ]);
 
-        $this->assertEquals(100, $payer->balance);
-        $this->assertEquals(500, $payee->balance);
+        $this->assertPayeeBalance($payee, 500);
+        $this->assertPayerBalance($payer, 100);
     }
 
     #[Test]
@@ -103,13 +111,15 @@ class StoreTransactionTest extends TestCase
             'message' => 'Merchant accounts cannot initiate transactions.',
         ], $response->json());
 
-        $this->assertDatabaseMissing('transactions', [
+        $this->assertDatabaseHas('transactions', [
             'payer_id' => $payer->id,
             'payee_id' => $payee->id,
+            'value' => $value,
+            'status' => TransactionStatusEnum::FAILED_INVALID_WALLET_TYPE->value,
         ]);
 
-        $this->assertEquals(1000, $payer->balance);
-        $this->assertEquals(500, $payee->balance);
+        $this->assertPayeeBalance($payee, 500);
+        $this->assertPayerBalance($payer, 1000);
     }
 
     #[Test]
@@ -138,13 +148,15 @@ class StoreTransactionTest extends TestCase
             'message' => 'Transaction not authorized by payment service.',
         ], $response->json());
 
-        $this->assertDatabaseMissing('transactions', [
+        $this->assertDatabaseHas('transactions', [
             'payer_id' => $payer->id,
             'payee_id' => $payee->id,
+            'value' => $value,
+            'status' => TransactionStatusEnum::FAILED_UNAUTHORIZED->value,
         ]);
 
-        $this->assertEquals(1000, $payer->balance);
-        $this->assertEquals(500, $payee->balance);
+        $this->assertPayerBalance($payer, 1000);
+        $this->assertPayeeBalance($payee, 500);
     }
 
     #[Test]
@@ -168,6 +180,8 @@ class StoreTransactionTest extends TestCase
         $this->assertDatabaseHas('transactions', [
             'payer_id' => $payer->id,
             'payee_id' => $payee->id,
+            'value' => $value,
+            'status' => TransactionStatusEnum::COMPLETED->value,
         ]);
 
         Event::assertDispatched(TransactionCompleted::class);
@@ -176,6 +190,18 @@ class StoreTransactionTest extends TestCase
             TransactionCompleted::class,
             SendTransactionSuccessNotification::class
         );
+    }
+
+    private function assertPayeeBalance(Wallet $payee, float $expectedBalance): void
+    {
+        $payee->refresh();
+        $this->assertEquals($expectedBalance, $payee->balance);
+    }
+
+    private function assertPayerBalance(Wallet $payer, float $expectedBalance): void
+    {
+        $payer->refresh();
+        $this->assertEquals($expectedBalance, $payer->balance);
     }
 
 }
