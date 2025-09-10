@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Actions\Wallet;
 
-use App\Exceptions\Wallet\InsufficientBalanceException;
 use App\Models\Wallet;
 use App\Repositories\Wallet\WalletRepository;
 

@@ -12,7 +12,7 @@ use App\Events\Transaction\TransactionCompleted;
 use App\Exceptions\ApplicationException;
 use App\Exceptions\Transaction\PayerCannotBeMerchantException;
 use App\Exceptions\Transaction\TransactionDeclinedByServiceException;
-use App\Exceptions\Wallet\InsufficientBalanceException;
+use App\Exceptions\Transaction\InsufficientBalanceException;
 use App\Models\Transaction;
 use App\Repositories\Transaction\TransactionRepository;
 use App\Services\Transaction\AuthorizationGatewayInterface;

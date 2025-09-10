@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Transaction;
 
 use App\Exceptions\Transaction\PayerCannotBeMerchantException;
-use App\Exceptions\Wallet\InsufficientBalanceException;
+use App\Exceptions\Transaction\InsufficientBalanceException;
 use App\Repositories\Wallet\WalletRepository;
 
 class PayerTransactionValidator

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Wallet;
 
-use App\Exceptions\Wallet\InsufficientBalanceException;
+use App\Exceptions\Transaction\InsufficientBalanceException;
 use App\Models\Wallet;
 use App\Repositories\Wallet\WalletRepository;
 
@@ -19,7 +19,6 @@ class DebitWalletAction
      * @param float $amount
      * @return Wallet
      * 
-     * @throws InsufficientBalanceException
      */
     public function handle(int $walletId, float $amount): Wallet
     {
