@@ -31,7 +31,7 @@ API RESTful desenvolvida para simular operações básicas de transferências de
 - PHP 8.4
 - Laravel 12
 - MySQL
-- Redis (para o sistema de filas e sessão (aplicável somente para o horizon))
+- Redis (para o sistema de filas)
 - Docker & Docker Compose
 - PHPUnit (para testes)
 - PHPStan (para análise estática de código)
@@ -212,7 +212,7 @@ php artisan queue:work
 
 <a id="rodando-os-testes"></a>
 
-## 🧪 Rodando os Testes
+## Rodando os Testes
 Para garantir a qualidade e a integridade do código, o projeto conta com testes e ferramentas de análise.
 
 **Rodar a suíte de testes (PHPUnit):**
@@ -237,7 +237,7 @@ Para garantir a qualidade e a integridade do código, o projeto conta com testes
 
 <a id="documentacao-da-api"></a>
 
-## 📖 Documentação da API
+## Documentação da API
 
 ### Endpoint Principal: Realizar Transferência
 *Para fins de desenvolvimento, essa rota não requer autenticação*
