@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Listeners\Transfer;
+namespace App\Listeners\Transaction;
 
-use App\Events\Transfer\TransferCompleted;
+use App\Events\Transaction\TransactionCompleted;
 use App\Services\Notifications\NotificationGatewayInterface;
 use Illuminate\Contracts\Queue\ShouldQueueAfterCommit;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 
-class SendTransferSuccessNotification implements ShouldQueueAfterCommit
+class SendTransactionSuccessNotification implements ShouldQueueAfterCommit
 {
     use InteractsWithQueue;
 
@@ -36,13 +36,13 @@ class SendTransferSuccessNotification implements ShouldQueueAfterCommit
     /**
      * Handle the event.
      */
-    public function handle(TransferCompleted $event): void
+    public function handle(TransactionCompleted $event): void
     {
-        $transfer = $event->transfer;
+        $transaction = $event->transaction;
 
-        $message = "Transfer of {$transfer->value} from wallet {$transfer->payer_id} to wallet {$transfer->payee_id} was successful.";
+        $message = "Transaction of {$transaction->value} from wallet {$transaction->payer_id} to wallet {$transaction->payee_id} was successful.";
 
-        $recipient = $transfer->payee->user->email;
+        $recipient = $transaction->payee->user->email;
 
         $this->notificationService->sendNotification($recipient, $message);
     }
@@ -50,10 +50,10 @@ class SendTransferSuccessNotification implements ShouldQueueAfterCommit
     /**
      * Handle a job failure.
      */
-    public function failed(TransferCompleted $event, \Throwable $exception): void
+    public function failed(TransactionCompleted $event, \Throwable $exception): void
     {
-        Log::error('Failed to send transfer success notification', [
-            'transfer_id' => $event->transfer->id,
+        Log::error('Failed to send Transaction success notification', [
+            'Transaction_id' => $event->transaction->id,
             'error' => $exception->getMessage(),
         ]);
     }

@@ -2,20 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Transfer;
+namespace App\Actions\Transaction;
 
-use App\Exceptions\Transfer\PayerCannotBeMerchantException;
+use App\Exceptions\Transaction\PayerCannotBeMerchantException;
 use App\Exceptions\Wallet\InsufficientBalanceException;
-use App\Models\Wallet;
 use App\Repositories\Wallet\WalletRepository;
 
-class EnsurePayerCanTransferAction
+class PayerTransactionValidator
 {
 
     public function __construct(private readonly WalletRepository $walletRepository) {}
 
     /**
-     * Ensure that the payer can make a transfer.
+     * Ensure that the payer can make a Transaction.
      *
      * @param integer $payerId
      * @param float $amount

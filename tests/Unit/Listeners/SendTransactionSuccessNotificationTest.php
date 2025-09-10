@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Listeners;
 
-use App\Events\Transfer\TransferCompleted;
-use App\Listeners\Transfer\SendTransferSuccessNotification;
-use App\Models\Transfer;
+use App\Events\Transaction\TransactionCompleted;
+use App\Listeners\Transaction\SendTransactionSuccessNotification;
+use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Services\Notifications\NotificationGatewayInterface;
@@ -20,16 +20,16 @@ use Exception;
 use RuntimeException;
 use InvalidArgumentException;
 
-class SendTransferSuccessNotificationTest extends TestCase
+class SendTransactionSuccessNotificationTest extends TestCase
 {
     private MockInterface&NotificationGatewayInterface $notificationService;
-    private SendTransferSuccessNotification $listener;
+    private SendTransactionSuccessNotification $listener;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->notificationService = Mockery::mock(NotificationGatewayInterface::class);
-        $this->listener = new SendTransferSuccessNotification($this->notificationService);
+        $this->listener = new SendTransactionSuccessNotification($this->notificationService);
     }
 
     protected function tearDown(): void
@@ -42,7 +42,7 @@ class SendTransferSuccessNotificationTest extends TestCase
     public function it_implements_correct_interfaces_and_traits(): void
     {
         $this->assertInstanceOf(ShouldQueueAfterCommit::class, $this->listener);
-        $traits = class_uses(SendTransferSuccessNotification::class);
+        $traits = class_uses(SendTransactionSuccessNotification::class);
         $this->assertContains(InteractsWithQueue::class, $traits);
     }
 
@@ -57,7 +57,7 @@ class SendTransferSuccessNotificationTest extends TestCase
     }
 
     #[Test]
-    public function it_sends_notification_successfully_when_handling_transfer_completed_event(): void
+    public function it_sends_notification_successfully_when_handling_Transaction_completed_event(): void
     {
         $payeeUser = Mockery::mock(User::class);
         $payeeUser->shouldReceive('getAttribute')->with('email')->andReturn('payee@example.com');
@@ -69,15 +69,15 @@ class SendTransferSuccessNotificationTest extends TestCase
         $payeeWallet->shouldReceive('getAttribute')->with('id')->andReturn(2);
         $payeeWallet->shouldReceive('getAttribute')->with('user')->andReturn($payeeUser);
 
-        $transfer = Mockery::mock(Transfer::class);
-        $transfer->shouldReceive('getAttribute')->with('value')->andReturn(100.50);
-        $transfer->shouldReceive('getAttribute')->with('payer_id')->andReturn($payerWallet->id);
-        $transfer->shouldReceive('getAttribute')->with('payee_id')->andReturn($payeeWallet->id);
-        $transfer->shouldReceive('getAttribute')->with('payee')->andReturn($payeeWallet);
+        $transaction = Mockery::mock(Transaction::class);
+        $transaction->shouldReceive('getAttribute')->with('value')->andReturn(100.50);
+        $transaction->shouldReceive('getAttribute')->with('payer_id')->andReturn($payerWallet->id);
+        $transaction->shouldReceive('getAttribute')->with('payee_id')->andReturn($payeeWallet->id);
+        $transaction->shouldReceive('getAttribute')->with('payee')->andReturn($payeeWallet);
 
-        $event = new TransferCompleted($transfer);
+        $event = new TransactionCompleted($transaction);
 
-        $expectedMessage = "Transfer of 100.5 from wallet 1 to wallet 2 was successful.";
+        $expectedMessage = "Transaction of 100.5 from wallet 1 to wallet 2 was successful.";
         $expectedRecipient = 'payee@example.com';
 
         $this->notificationService
@@ -91,7 +91,7 @@ class SendTransferSuccessNotificationTest extends TestCase
     }
 
     #[Test]
-    public function it_handles_different_transfer_amounts_correctly(): void
+    public function it_handles_different_Transaction_amounts_correctly(): void
     {
         $payeeUser = Mockery::mock(User::class);
         $payeeUser->shouldReceive('getAttribute')->with('email')->andReturn('recipient@test.com');
@@ -110,14 +110,14 @@ class SendTransferSuccessNotificationTest extends TestCase
         ];
 
         foreach ($testCases as $case) {
-            $transfer = Mockery::mock(Transfer::class);
-            $transfer->shouldReceive('getAttribute')->with('payer_id')->andReturn($payerWallet->id);
-            $transfer->shouldReceive('getAttribute')->with('payee_id')->andReturn($payeeWallet->id);
-            $transfer->shouldReceive('getAttribute')->with('value')->andReturn($case['value']);
-            $transfer->shouldReceive('getAttribute')->with('payee')->andReturn($payeeWallet);
+            $transaction = Mockery::mock(Transaction::class);
+            $transaction->shouldReceive('getAttribute')->with('payer_id')->andReturn($payerWallet->id);
+            $transaction->shouldReceive('getAttribute')->with('payee_id')->andReturn($payeeWallet->id);
+            $transaction->shouldReceive('getAttribute')->with('value')->andReturn($case['value']);
+            $transaction->shouldReceive('getAttribute')->with('payee')->andReturn($payeeWallet);
 
-            $event = new TransferCompleted($transfer);
-            $expectedMessage = "Transfer of {$case['expectedAmount']} from wallet 10 to wallet 20 was successful.";
+            $event = new TransactionCompleted($transaction);
+            $expectedMessage = "Transaction of {$case['expectedAmount']} from wallet 10 to wallet 20 was successful.";
 
             $this->notificationService
                 ->shouldReceive('sendNotification')
@@ -135,14 +135,14 @@ class SendTransferSuccessNotificationTest extends TestCase
         Log::shouldReceive('error')
             ->once()
             ->with(
-                'Failed to send transfer success notification',
-                ['transfer_id' => 123, 'error' => 'Test exception message']
+                'Failed to send Transaction success notification',
+                ['Transaction_id' => 123, 'error' => 'Test exception message']
             );
 
-        $transfer = Mockery::mock(Transfer::class);
-        $transfer->shouldReceive('getAttribute')->with('id')->andReturn(123);
+        $transaction = Mockery::mock(Transaction::class);
+        $transaction->shouldReceive('getAttribute')->with('id')->andReturn(123);
 
-        $event = new TransferCompleted($transfer);
+        $event = new TransactionCompleted($transaction);
         $exception = new Exception('Test exception message');
 
         $this->listener->failed($event, $exception);
@@ -152,10 +152,10 @@ class SendTransferSuccessNotificationTest extends TestCase
     #[Test]
     public function it_handles_different_exception_types_in_failed_method(): void
     {
-        $transfer = Mockery::mock(Transfer::class);
-        $transfer->shouldReceive('getAttribute')->with('id')->andReturn(456);
+        $transaction = Mockery::mock(Transaction::class);
+        $transaction->shouldReceive('getAttribute')->with('id')->andReturn(456);
 
-        $event = new TransferCompleted($transfer);
+        $event = new TransactionCompleted($transaction);
 
         $exceptions = [
             new RuntimeException('Runtime error'),
@@ -167,8 +167,8 @@ class SendTransferSuccessNotificationTest extends TestCase
             Log::shouldReceive('error')
                 ->once()
                 ->with(
-                    'Failed to send transfer success notification',
-                    ['transfer_id' => 456, 'error' => $exception->getMessage()]
+                    'Failed to send Transaction success notification',
+                    ['Transaction_id' => 456, 'error' => $exception->getMessage()]
                 );
 
             $this->listener->failed($event, $exception);

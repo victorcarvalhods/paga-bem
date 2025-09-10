@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Transfers;
+namespace App\Services\Transaction;
 
 use Illuminate\Container\Attributes\Bind;
 
@@ -8,7 +8,7 @@ use Illuminate\Container\Attributes\Bind;
 interface AuthorizationGatewayInterface
 {
     /**
-     * Authorize a transfer request.
+     * Authorize a transaction request.
      *
      * @return boolean
      */

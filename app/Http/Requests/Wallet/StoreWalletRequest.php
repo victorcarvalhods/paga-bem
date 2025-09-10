@@ -33,11 +33,11 @@ class StoreWalletRequest extends FormRequest
     public function toDTO(): WalletDTO
     {
         $data = $this->validated();
-        return WalletDTO::fromArray([
-            'id' => null,
-            'userId' => $data['user_id'],
-            'balance' => floatval($data['balance']),
-            'walletType' => $data['wallet_type'],
-        ]);
+        return new WalletDTO(
+            id : null,
+            userId : $data['user_id'],
+            balance : floatval($data['balance']),
+            walletType : $data['wallet_type'],
+        );
     }
 }

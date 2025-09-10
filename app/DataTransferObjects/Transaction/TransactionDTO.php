@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\DataTransferObjects\Transfer;
+namespace App\DataTransferObjects\Transaction;
 
-final class TransferDTO
+final class TransactionDTO
 {
 
     public function __construct(

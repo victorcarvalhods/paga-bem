@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Transfers;
+namespace App\Services\Transaction;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Http;

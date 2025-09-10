@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Http\Requests\Transfer;
+namespace App\Http\Requests\Transaction;
 
+use App\DataTransferObjects\Transaction\TransactionDTO;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTransferRequest extends FormRequest
+class StoreTransactionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
+    public function authorize(): bool 
     {
         return true;
     }
@@ -27,4 +28,15 @@ class StoreTransferRequest extends FormRequest
             'payee' => ['required', 'integer', 'exists:wallets,id'],
         ];
     }
+
+    public function toDTO(): TransactionDTO
+    {
+        $data = $this->validated();
+        return new TransactionDTO(
+            value: floatval($data['value']),
+            payer: $data['payer'],
+            payee: $data['payee'],
+        );
+    }
+
 }
